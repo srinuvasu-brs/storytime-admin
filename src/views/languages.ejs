@@ -1,0 +1,210 @@
+<%- include('./partials/header.ejs') %>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Languages</h1>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Languages
+            <a data-bs-toggle="modal" data-bs-target="#new-language" class="float-end add-lag-mod-trigger" href="#">Add Language</a>
+          </div>
+          <div class="card-body">
+            <table id="datatablesSimple">
+              <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Actions</th>
+                  </tr>
+              </thead>
+              <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Code</th>
+                    <th>Actions</th>
+                  </tr>
+              </tfoot>
+              <tbody>
+                <% for(var i=0; i < languages.length; i++) { %>
+                  <tr>
+                   <td><%= languages[i].name %></td>
+                   <td><%= languages[i].code %></td>
+                   <td>
+                    <a title="Edit Language" data-bs-toggle="modal" data-bs-target="#edit-language-<%= languages[i].id %>" class="edit-languages" role="button" data-url="/admin/languages/<%=languages[i].id %>/destroy"><i class="fas fa-edit"></i></a>&nbsp;&nbsp;
+                    <div class="modal fade" id="edit-language-<%= languages[i].id %>" tabindex="-1" role="dialog" aria-labelledby="edit_language_<%= languages[i].id %>" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="edit_language_<%= languages[i].id %>">Edit Language</h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form>
+                          <div class="modal-body">
+                              <div class="row">
+                                <div class="col-md-6">
+                                  <label>Name</label>
+                                  <input class="form-control name" type="text" name="name" value="<%= languages[i].name %>">
+                                </div>
+                                <div class="col-md-6">
+                                  <label>Code</label>
+                                  <input class="form-control code" type="text" name="code" value="<%= languages[i].code %>">
+                                </div>
+                              </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button data-url="/admin/languages/<%=languages[i].id %>/update" type="button" class="btn btn-outline-primary edit-language">Update</button>
+                          </div>
+                            </form>
+                        </div>
+                      </div>
+                    </div>
+                    <a title="Delete Language" data-bs-toggle="modal" data-bs-target="#delete-language-<%= languages[i].id %>" class="delete-languages" role="button" data-url="/admin/languages/<%=languages[i].id %>/destroy"><i class="fas fa-trash-alt text-danger"></i></a>
+                    <div class="modal fade" id="delete-language-<%= languages[i].id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete Language</h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete Language <b><%= languages[i].name %></b>?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button data-url="/admin/languages/<%=languages[i].id %>/destroy" type="button" class="btn btn-outline-danger delete-language">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="new-language" tabindex="-1" role="dialog" aria-labelledby="new_language" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="new_language">Add Language</h5>
+              <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form>
+            <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label>Name</label>
+                    <input class="form-control" type="text" name="name" id="name">
+                  </div>
+                  <div class="col-md-6">
+                    <label>Code</label>
+                    <input class="form-control" type="text" name="code" id="code">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                  </div>
+                  <div class="col-md-4">
+                  </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              <button data-url="/admin/languages/create" type="button" class="btn btn-outline-primary add-language">Add Language</button>
+            </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.add-lag-mod-trigger').click(function(e){ $('#name').val('');$('#code').val('')})
+      $('.add-language').click(function(e){
+        const name = $(this).parent('.modal-footer').siblings('.modal-body').find('#name').val();
+        const code = $(this).parent('.modal-footer').siblings('.modal-body').find('#code').val();
+        if (name.length == 0) { toastr.error('Name is required'); return}
+        if (code.length == 0) { toastr.error('Code is required'); return}
+        const url = e.currentTarget.getAttribute('data-url');
+        $(e.currentTarget).attr('disabled', 'disabled');
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: {name: name, code: code},
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+      $('.edit-language').click(function(e){
+        const name = $(this).parent('.modal-footer').siblings('.modal-body').find('.name').val();
+        const code = $(this).parent('.modal-footer').siblings('.modal-body').find('.code').val();
+        if (name.length == 0) { toastr.error('Name is required'); return}
+        if (code.length == 0) { toastr.error('Code is required'); return}
+        $(e.currentTarget).attr('disabled', 'disabled');
+        const url = e.currentTarget.getAttribute('data-url');
+        $.ajax({
+          type: "PUT",
+          url: url,
+          data: {name: name, code: code},
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+      $('.delete-language').click(function(e){
+        $(e.currentTarget).attr('disabled', 'disabled');
+        const url = e.currentTarget.getAttribute('data-url');
+        $.ajax({
+          type: "DELETE",
+          url: url,
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+    })
+  </script>
+<%- include('./partials/footer.ejs') %>

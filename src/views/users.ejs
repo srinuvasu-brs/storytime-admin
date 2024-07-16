@@ -1,0 +1,159 @@
+<%- include('./partials/header.ejs') %>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Users</h1>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Users
+          </div>
+          <div class="card-body">
+            <table id="datatablesSimple">
+              <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Verified</th>
+                    <th>Languages</th>
+                    <th>Categories</th>
+                    <th>Stories</th>
+                    <th>Actions</th>
+                  </tr>
+              </thead>
+              <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Verified</th>
+                    <th>Languages</th>
+                    <th>Categories</th>
+                    <th>Stories</th>
+                    <th>Actions</th>
+                  </tr>
+              </tfoot>
+              <tbody>
+                <% for(var i=0; i < users.length; i++) { %>
+                  <tr>
+                   <td><%= users[i].first_name %> <%= users[i].last_name %></td>
+                   <td><%= users[i].email %></td>
+                   <td><%= users[i].verified ? 'Verified' : 'Not Verified' %></td>
+                   <!-- <td><%= users[i].languages %></td> -->
+                   <td><%= users[i].languages.map(e => e.name).join(', ') || '-' %></td>
+                   <td><%= users[i].categories.map(e => e.name).join(', ') || '-' %></td>
+                    <td>
+                   <% if (users[i].saved_stories.length) { %>
+                    <a role="button" class="user-stories" data-url='/admin/users/<%= users[i].id %>/libraries'><%= users[i].saved_stories.length %></a>
+                   <% } else { %>
+                    -
+                   <% } %>
+                    </td>
+                   <td>
+                    <!-- <a title="Edit User" href="/admin/users/<%=users[i].id %>/edit/"><i class="fas fa-edit"></i></a>&nbsp;&nbsp; -->
+                    <a data-bs-toggle="modal" data-bs-target="#delete-user-<%= users[i].id %>" class="delete-users" role="button" data-url="/admin/users/<%=users[i].id %>/destroy"><i class="fas fa-trash-alt text-danger"></i></a>
+                    <div class="modal fade" id="delete-user-<%= users[i].id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete User</h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete user <%= users[i].first_name %> <%= users[i].last_name %> ?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button data-url="/admin/users/<%=users[i].id %>/destroy" type="button" class="btn btn-outline-danger delete-user">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal fade modal-xl" id="user_stories_modal" tabindex="-1" role="dialog" aria-labelledby="user_stories_modal_Label" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="user_stories_modal_Label">User Libraries - <span id="user_name"></span></h5>
+                  <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row" id="user_libraries">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.delete-user').click(function(e){
+        $(e.currentTarget).attr('disabled', 'disabled');
+        const url = e.currentTarget.getAttribute('data-url');
+        $.ajax({
+          type: "DELETE",
+          url: url,
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+      $('.user-stories').each(function(i, ele) {
+        $(ele).click(function(e) {
+          const url = e.currentTarget.getAttribute('data-url')
+          $.ajax({
+            type: "GET",
+            url: url,
+            success: function(msg, status, xhr){
+              if (xhr.status == 200) {
+                $('#user_stories_modal').modal('show');
+                const user_libraries = msg.data.shows.map((e) => {
+                  return `
+                    <div class="col-md-2">
+                      <div class="user-story p-2 h-100">
+                        <img src="${e.images[1].url}" class="w-100 border border-white border-secondary rounded mb-2">
+                        <h6>${e.name}</h6>
+                        <p>${e.publisher}</p>
+                      </div>
+                    </div>
+                  `
+                });
+                $("#user_libraries").html(user_libraries.join(''))
+                $("#user_name").html(msg.name)
+              }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+              console.log(XMLHttpRequest?.responseJSON)
+              if (XMLHttpRequest?.responseJSON?.message) {
+                toastr.error(XMLHttpRequest?.responseJSON?.message)
+              }
+            }
+          });
+        })
+      })
+    })
+  </script>
+<%- include('./partials/footer.ejs') %>

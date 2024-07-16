@@ -1,0 +1,243 @@
+<%- include('./partials/header.ejs') %>
+  <div id="layoutSidenav_content">
+    <main>
+      <div class="container-fluid px-4">
+        <h1 class="mt-4">Categories</h1>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Categories
+            <a data-bs-toggle="modal" data-bs-target="#new-category" class="float-end add-cat-mod-trigger" href="#">Add Category</a>
+          </div>
+          <div class="card-body">
+            <table id="datatablesSimple">
+              <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Keywords</th>
+                    <th>Authors</th>
+                    <th>Actions</th>
+                  </tr>
+              </thead>
+              <tfoot>
+                  <tr>
+                    <th>Category</th>
+                    <th>Keywords</th>
+                    <th>Authors</th>
+                    <th>Actions</th>
+                  </tr>
+              </tfoot>
+              <tbody>
+                <% for(var i=0; i < categories.length; i++) { %>
+                  <tr>
+                   <td><%= categories[i].category %></td>
+                   <td><%= categories[i].keywords %></td>
+                   <td>
+                    <a data-bs-toggle="modal" data-bs-target="#author_modal_<%= categories[i]._id %>" role="button" href="#"><%= categories[i].authors.length %></a>
+                    <div class="modal fade modal-xl" id="author_modal_<%= categories[i]._id %>" tabindex="-1" role="dialog" aria-labelledby="author_modal_Label" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="author_modal_Label">Authors - No.of Stories</span></h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="row">
+                              <% for(var j = 0; j < categories[i].authors.length; j++) { %>
+                              <% if(categories[i]?.authors[j]?.author) { %>
+                                <div class="col-md-3 mb-2">
+                                  <div class="p-2 rounded border border-secondary">
+                                    <b>
+                                      <%= (categories[i]?.authors[j]?.author) %>:
+                                    </b>
+                                    <b>
+                                      <%= (categories[i]?.authors[j]?.count) %>
+                                    </b>
+                                  </div>
+                                </div>
+                              <% } %>
+                              <% } %>
+                            </div>
+                          </div>
+                          <div class="modal-footer">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   </td>
+                   <td>
+                    <a title="Edit Category" data-bs-toggle="modal" data-bs-target="#edit-category-<%= categories[i]._id %>" class="edit-categories" role="button" data-url="/admin/categories/<%=categories[i]._id %>/destroy"><i class="fas fa-edit"></i></a>&nbsp;&nbsp;
+                    <div class="modal fade" id="edit-category-<%= categories[i]._id %>" tabindex="-1" role="dialog" aria-labelledby="edit_category_<%= categories[i]._id %>" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="edit_category_<%= categories[i]._id %>">Edit Category</h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <form>
+                          <div class="modal-body">
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <label>Category</label>
+                                  <input class="form-control category" type="text" name="category" value="<%= categories[i].category %>">
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="col-md-12">
+                                  <label>Keywords</label>
+                                  <input class="form-control keywords" type="text" name="keywords" value="<%= categories[i].keywords %>">
+                                </div>
+                              </div>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button data-url="/admin/categories/<%=categories[i]._id %>/update" type="button" class="btn btn-outline-primary edit-category">Update</button>
+                          </div>
+                            </form>
+                        </div>
+                      </div>
+                    </div>
+                    <a title="Delete Category" data-bs-toggle="modal" data-bs-target="#delete-category-<%= categories[i]._id %>" class="delete-categories" role="button" data-url="/admin/categories/<%=categories[i]._id %>/destroy"><i class="fas fa-trash-alt text-danger"></i></a>
+                    <div class="modal fade" id="delete-category-<%= categories[i]._id %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Delete Category</h5>
+                            <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            Are you sure you want to delete Category <b><%= categories[i].category %></b>?
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                            <button data-url="/admin/categories/<%=categories[i]._id %>/destroy" type="button" class="btn btn-outline-danger delete-category">Delete</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                   </td>
+                  </tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="new-category" tabindex="-1" role="dialog" aria-labelledby="new_category" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="new_category">Add Category</h5>
+              <button type="button" class="close btn btn-sm btn-outline-secondary" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <form>
+            <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-12">
+                    <label>Category</label>
+                    <input class="form-control" type="text" name="category" id="category">
+                  </div>
+                  <div class="col-md-12">
+                    <label>Keywords</label>
+                    <input class="form-control" type="text" name="keywords" id="keywords">
+                  </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              <button data-url="/admin/categories/create" type="button" class="btn btn-outline-primary add-category">Add Category</button>
+            </div>
+              </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.add-cat-mod-trigger').click(function(e){ $('#category').val('');$('#keywords').val('')})
+
+      $('.add-category').click(function(e){
+        if ($('#category').val().length == 0) { toastr.error('Category is required'); return}
+        if ($('#keywords').val().length == 0) { toastr.error('Keywords are required'); return}
+        const url = e.currentTarget.getAttribute('data-url');
+        $(e.currentTarget).attr('disabled', 'disabled');
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: {category: $('#category').val(), keywords: $('#keywords').val()},
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+      $('.edit-category').click(function(e){
+        const category = $(this).parent('.modal-footer').siblings('.modal-body').find('.category').val();
+        const keyword = $(this).parent('.modal-footer').siblings('.modal-body').find('.keywords').val();
+        if (category.length == 0) { toastr.error('Category is required'); return}
+        if (keyword.length == 0) { toastr.error('Keywords are required'); return}
+        $(e.currentTarget).attr('disabled', 'disabled');
+        const url = e.currentTarget.getAttribute('data-url');
+        $.ajax({
+          type: "PUT",
+          url: url,
+          data: {category: category, keywords: keyword},
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+      $('.delete-category').click(function(e){
+        $(e.currentTarget).attr('disabled', 'disabled');
+        const url = e.currentTarget.getAttribute('data-url');
+        $.ajax({
+          type: "DELETE",
+          url: url,
+          data: {name: $('#name').val(), code: $('#code').val()},
+          dataType: "json",
+          success: function(msg, status, xhr){
+            if (xhr.status == 200) {
+              toastr.success(msg.message);
+              setTimeout(()=> { window.location.reload()}, 1000);
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            if (XMLHttpRequest?.responseJSON?.message) {
+              $(e.currentTarget).removeAttr('disabled');
+              toastr.error(XMLHttpRequest?.responseJSON?.message)
+            }
+          }
+        });
+      })
+    })
+  </script>
+<%- include('./partials/footer.ejs') %>
